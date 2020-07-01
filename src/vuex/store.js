@@ -18,6 +18,12 @@ export default new Vuex.Store({
       axios.defaults.headers.common['Authorization'] = `Bearer ${
         userData.token
       }`
+    },
+    LOGOUT () {
+      localStorage.removeItem('user')
+      /** reload() refresh the page and since Vuex State does not survive a browser refresh,
+       * it takes care of clearing our user State for us */
+      location.reload()
     }
   },
   actions: {
@@ -28,6 +34,25 @@ export default new Vuex.Store({
           console.log('User data are: ', data)
           commit('SET_USER_DATA', data)
         })
+    },
+    login ({ commit }, credentials) {
+      return axios
+        .post('//localhost:3000/login', credentials)
+        .then(({ data }) => {
+          console.log('User data are: ', data)
+          commit('SET_USER_DATA', data)
+        })
+    },
+    logout ({ commit }) {
+      commit('LOGOUT')
+    }
+  },
+  getters: {
+    loggedIn (state) {
+      /** !!state.user Determine the truthiness or falsiness of the value.
+       * So this getter will return true if we have a user stored in our state,
+       * and false when that state is null. */
+      return !!state.user
     }
   }
 })
